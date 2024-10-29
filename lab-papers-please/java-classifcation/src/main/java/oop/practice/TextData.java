@@ -49,7 +49,6 @@ public class TextData {
     }
 
     private int countCharacters(String regex) {
-        // characters matching regex
         return text.replaceAll("[^" + regex + "]", "").length();
     }
 

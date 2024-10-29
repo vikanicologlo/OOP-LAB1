@@ -14,7 +14,7 @@ public class Assistant {
         this.assignedDisplays = new ArrayList<>();
     }
 
-
+    //assign assistant
     public void assignDisplay(Display d) {
         assignedDisplays.add(d);
         System.out.println("Display " + d.getModel() + " assigned to assistant " + assistantName + ".");

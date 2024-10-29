@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+//read files
 public class FileReader {
     public String readFileIntoString(String path) {
         try {
