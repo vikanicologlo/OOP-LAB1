@@ -1,97 +1,93 @@
 package oop.practice;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class Main {
-  public static void main(String[] args) throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    File inputFile = new File("/Users/viktorianicologlo/Downloads/oop-course-repo/lab-papers-please/java-classifcation/src/main/resources/input1.json");
-    JsonNode data = mapper.readTree(inputFile).get("input");
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        FileReader fileReader = new FileReader();
 
-    Universe starWars = new Universe("starWars", new ArrayList<>());
-    Universe hitchhikers = new Universe("hitchHiker", new ArrayList<>());
-    Universe marvel = new Universe("marvel", new ArrayList<>());
-    Universe rings = new Universe("rings", new ArrayList<>());
+        //file paths for reading
+        String[] filePaths = {
+                "/Users/viktorianicologlo/Desktop/OOP-LAB1/lab-papers-please/java-classifcation/text.txt",
+                "/Users/viktorianicologlo/Desktop/OOP-LAB1/lab-papers-please/java-classifcation/text2.txt",
+                "/Users/viktorianicologlo/Desktop/OOP-LAB1/lab-papers-please/java-classifcation/text3.txt"
+        };
 
-    //iteration over data entries
-    for (JsonNode entry : data) {
-      Criteria criteria = new Criteria(entry);
-      // classification
-      if (criteria.planet.equals("Kashyyyk") || (!criteria.isHumanoid && criteria.age <= 400 && criteria.hasTraits("HAIRY", "TALL"))) {
-        starWars.individuals().add(entry);
-      } else if (criteria.planet.equals("Endor")) {
-        starWars.individuals().add(entry);
-      } else if (criteria.planet.equals("Asgard") || (!criteria.planet.equals("Earth") && criteria.isHumanoid && criteria.age <= 5000 && criteria.hasTraits("BLONDE", "TALL"))) {
-        marvel.individuals().add(entry);
-      } else if (criteria.planet.equals("Betelgeuse") || (criteria.age <= 100 && (criteria.hasTraits("EXTRA_ARMS") || criteria.hasTraits("EXTRA_HEAD")))) {
-        hitchhikers.individuals().add(entry);
-      } else if (criteria.planet.equals("Vogsphere") || (!criteria.planet.equals("Earth") && (!criteria.isHumanoid && (criteria.hasTraits("BULKY") || (criteria.hasTraits("GREEN") ) || (criteria.age <= 200 && criteria.hasTraits("GREEN")))))) {
-        hitchhikers.individuals().add(entry);
-      } else if (criteria.planet.equals("Earth") || (criteria.isHumanoid && criteria.age <= 8000)) {
-        rings.individuals().add(entry);
-      } else if (criteria.planet.equals("Earth") || (criteria.isHumanoid && criteria.hasTraits("BULKY"))) {
-        rings.individuals().add(entry);
-      } else {
-        System.out.println("There are characters who don't match the right criteria");
-      }
+
+        Display display1 = new Display(3840, 2160, 163, "Dell U2720Q"); // 27-inch, 4K UHD
+        Display display2 = new Display(2560, 1440, 109, "ASUS ROG Swift PG279Q"); // 27-inch, QHD
+        Display display3 = new Display(5120, 2880, 218, "LG UltraFine 5K"); // 27-inch, 5K
+        Display display4 = new Display(3840, 1600, 137, "Asus ProArt PA34VC"); // 34-inch, UWQHD+ (ultrawide)
+
+        while (true) {
+            // menu
+            System.out.println("Please choose an option:");
+            System.out.println("1. Task 1 (Compare Displays)");
+            System.out.println("2. Task 3 (Assistant)");
+            System.out.println("3. Task 4 (Read Files)");
+            System.out.println("0. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    // Task 1
+                    display1.compareSize(display2);
+                    display1.compareSharpness(display2);
+                    display2.compareSize(display3);
+                    display2.compareSharpness(display3);
+                    display1.compareWithMonitor(display3);
+                    break;
+
+                case 2:
+                    // Task 3
+                    Assistant assistant = new Assistant("Tech Assistant");
+                    assistant.assignDisplay(display1);
+                    assistant.assignDisplay(display2);
+                    assistant.assignDisplay(display3);
+                    assistant.assignDisplay(display4);
+                    assistant.assist();
+                    Display boughtDisplay = assistant.buyRandomDisplay();
+                    System.out.println("Bought display: " + (boughtDisplay != null ? boughtDisplay.getModel() : "None"));
+                    break;
+
+                case 3:
+                    //Task 4
+                    System.out.println("Choose a file to read:");
+                    for (int i = 0; i < filePaths.length; i++) {
+                        System.out.println((i + 1) + ". " + filePaths[i]);
+                    }
+                    System.out.println("Enter the number of the file you want to read:");
+                    int fileChoice = scanner.nextInt() - 1; // Convert to zero-based index
+
+                    if (fileChoice >= 0 && fileChoice < filePaths.length) {
+                        System.out.println("File to check: " + filePaths[fileChoice]);
+                        String fileContent = fileReader.readFileIntoString(filePaths[fileChoice]);
+                        TextData textData = new TextData(filePaths[fileChoice], fileContent);
+
+                        System.out.println("File name: " + textData.getFileName());
+                        System.out.println("File content: " + textData.getText());
+                        System.out.println("Number of vowels: " + textData.getNumberOfVowels());
+                        System.out.println("Number of consonants: " + textData.getNumberOfConsonants());
+                        System.out.println("Number of letters: " + textData.getNumberOfLetters());
+                        System.out.println("Number of sentences: " + textData.getNumberOfSentences());
+                        System.out.println("The longest word: " + textData.getLongestWord());
+                    } else {
+                        System.out.println("Invalid file selection.");
+                    }
+                    break;
+
+                case 0:
+                    // Exit the program
+                    System.out.println("Exiting the program.");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
     }
-
-    View view = new View(mapper);
-
-    //storing data in json files
-    view.writeToFile(starWars, "/Users/viktorianicologlo/Downloads/oop-course-repo/lab-papers-please/output/starwars.json");
-    view.writeToFile(hitchhikers, "/Users/viktorianicologlo/Downloads/oop-course-repo/lab-papers-please/output/hitchhiker.json");
-    view.writeToFile(rings, "/Users/viktorianicologlo/Downloads/oop-course-repo/lab-papers-please/output/rings.json");
-    view.writeToFile(marvel, "/Users/viktorianicologlo/Downloads/oop-course-repo/lab-papers-please/output/marvel.json");
-  }
-}
-
-class Criteria {
-  public String planet;
-  public boolean isHumanoid;
-  public int age;
-  public List<String> traits;
-
-  public Criteria(JsonNode entry) {
-    this.planet = entry.has("planet") ? entry.get("planet").asText() : "";
-    this.isHumanoid = entry.has("isHumanoid") ? entry.get("isHumanoid").asBoolean() : false;
-    this.age = entry.has("age") ? entry.get("age").asInt() : 0;
-
-    // Check if entry has traits and then convert each trait to string
-    this.traits = new ArrayList<>();
-    if (entry.has("traits")) {
-      entry.get("traits").forEach(trait -> this.traits.add(trait.asText()));
-    }
-  }
-
-  // Check if entry contains specified traits, return false if not and true if contains
-  public boolean hasTraits(String... traitsToCheck) {
-    for (String trait : traitsToCheck) {
-      if (!this.traits.contains(trait)) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
-
-record Universe(String name, List<JsonNode> individuals) { }
-
-class View {
-  private final ObjectMapper mapper;
-
-  public View(ObjectMapper mapper) {
-    this.mapper = mapper;
-  }
-
-  //pretty format of the strings to json file
-  public void writeToFile(Universe universe, String filePath) throws IOException {
-    mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), universe);
-  }
 }
